@@ -21,7 +21,7 @@ function sendEmailNotification(message) {
   });
 
   let mailOptions = {
-    from: '"Sender Name" oblivusmachineupdates@gmail.com',
+    from: '"Oblivus Update App" oblivusmachineupdates@gmail.com',
     to: 'oblivusmachineupdates@gmail.com, jasel.chauhan@gmail.com',
     subject: `Oblivus Machine Update`,
     text: `${message}`,
