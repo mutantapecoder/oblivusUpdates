@@ -9,6 +9,8 @@ const emailPassword = process.env.EMAIL_PASSWORD;
 
 const listVMsURL = `https://api.oblivus.com/cloud/virtualserver/list/?apiKey=${apiKey}&apiToken=${apiToken}`;
 
+const exceptionList = ['vm16169ddd1d5b0'];
+
 function sendEmailNotification(message) {
   console.log(`Sending email notification: ${message}`);
 
@@ -46,10 +48,15 @@ function getMachineData() {
       const machineData = response.data.data;
       // console.log(machineData);
 
-      //check through all machines and if the status is not equal to running, then alert user with the status and the machine with the non running status
+      //check through all machines and if the status is not equal to running, then alert user with the status and the machine with the non running status. if machine is on the exception list skip
 
       machineData.map((machine) => {
-        if (machine.status !== 'Running') {
+        if (exceptionList.includes(machine.ID)) {
+          console.log(
+            `machine ${machine.name} is on the exception list and therefore email will not be sent`
+          );
+          return;
+        } else if (machine.status !== 'Running') {
           console.log(
             `Alert: Machine ${machine.name} with ID ${machine.ID} has a status of '${machine.status}'`
           );
@@ -68,3 +75,6 @@ function getMachineData() {
 
 //runs code every 5 minutes to check for machine udpates
 setInterval(getMachineData, 5 * 60 * 1000);
+
+//runs code every 10 seconds instead of every 5 minutes
+// setInterval(getMachineData, 10000);
