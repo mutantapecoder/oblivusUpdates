@@ -4,6 +4,8 @@ const nodemailer = require('nodemailer');
 
 const apiKey = process.env.API_KEY;
 const apiToken = process.env.API_TOKEN;
+const emailUser = process.env.EMAIL_USER;
+const emailPassword = process.env.EMAIL_PASSWORD;
 
 const listVMsURL = `https://api.oblivus.com/cloud/virtualserver/list/?apiKey=${apiKey}&apiToken=${apiToken}`;
 
@@ -13,8 +15,8 @@ function sendEmailNotification(message) {
   let transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: 'oblivusmachineupdates@gmail.com',
-      pass: 'okdk kgzh mqff yziw',
+      user: emailUser,
+      pass: emailPassword,
     },
   });
 
@@ -64,4 +66,5 @@ function getMachineData() {
     });
 }
 
+//runs code every 5 minutes to check for machine udpates
 setInterval(getMachineData, 5 * 60 * 1000);
