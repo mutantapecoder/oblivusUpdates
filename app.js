@@ -1,17 +1,67 @@
 require('dotenv').config();
-
-console.log('hello');
+const axios = require('axios');
+const nodemailer = require('nodemailer');
 
 const apiKey = process.env.API_KEY;
+const apiToken = process.env.API_TOKEN;
 
-// const API_KEY = 'oblivus4a08bdd5ebe0c09c2dc147c3d';
-// const API_TOKEN = 'd6e9f83bc27827b4b0bd39ae5d128cb9647b1e63';
+const listVMsURL = `https://api.oblivus.com/cloud/virtualserver/list/?apiKey=${apiKey}&apiToken=${apiToken}`;
 
-//connect to oblivus api
+function sendEmailNotification(message) {
+  console.log(`Sending email notification: ${message}`);
 
-// find out if possible to get list of each machine ID in one call
+  let transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+      user: 'oblivusmachineupdates@gmail.com',
+      pass: 'okdk kgzh mqff yziw',
+    },
+  });
 
-// using list VMs url: https://api.oblivus.com/cloud/virtualserver/list/?apiKey=your-API-key (required)&apiToken=your-API-token (required)
+  let mailOptions = {
+    from: '"Sender Name" oblivusmachineupdates@gmail.com',
+    to: 'oblivusmachineupdates@gmail.com, jasel.chauhan@gmail.com',
+    subject: `Oblivus Machine Update`,
+    text: `${message}`,
+    html: `${message}`,
+  };
 
-//using VM details url: https://api.oblivus.com/cloud/virtualserver/details/?apiKey=your-API-key (required)&apiToken=your-API-token (required)&vmID=your-vm-ID (required)
-//every 5 minutes make a call to server to find out the status of each of my machines
+  // Send the email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log(error);
+    }
+    console.log('Message sent: %s', info.messageId);
+    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+  });
+}
+
+function getMachineData() {
+  axios
+    .get(listVMsURL)
+    .then((response) => {
+      // console.log(response.data);
+      const machineData = response.data.data;
+      // console.log(machineData);
+
+      //check through all machines and if the status is not equal to running, then alert user with the status and the machine with the non running status
+
+      machineData.map((machine) => {
+        if (machine.status !== 'Running') {
+          console.log(
+            `Alert: Machine ${machine.name} with ID ${machine.ID} has a status of '${machine.status}'`
+          );
+
+          // Replace this with your actual email sending logic
+          sendEmailNotification(
+            `Machine: <strong> ${machine.name} </strong> with an ID of: <strong> ${machine.ID} </strong> has a status of ' <strong> ${machine.status} </strong>'. <br><br> Go to <a href="https://console.oblivus.com/dashboard/oblivuscloud/myinstances/">Oblivus Dashboard</a> and reboot to stop your miner from getting rugged. `
+          );
+        }
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+setInterval(getMachineData, 5 * 60 * 1000);
