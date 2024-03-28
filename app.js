@@ -1,6 +1,6 @@
-require('dotenv').config();
 const axios = require('axios');
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 const apiKey = process.env.API_KEY;
 const apiToken = process.env.API_TOKEN;
@@ -43,11 +43,7 @@ function getMachineData() {
   axios
     .get(listVMsURL)
     .then((response) => {
-      // console.log(response.data);
       const machineData = response.data.data;
-      // console.log(machineData);
-
-      //check through all machines and if the status is not equal to running, then alert user with the status and the machine with the non running status. if machine is on the exception list skip
 
       machineData.map((machine) => {
         if (exceptionList.includes(machine.ID)) {
