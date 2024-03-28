@@ -89,7 +89,7 @@ function getUserData() {
     });
 }
 
-// setInterval(getUserData, 2 * 60 * 60 * 1000);
-setInterval(getUserData, 10000);
+setInterval(getUserData, 2 * 60 * 60 * 1000);
+// setInterval(getUserData, 10000);
 setInterval(getMachineData, 5 * 60 * 1000);
 // setInterval(getMachineData, 10000);
