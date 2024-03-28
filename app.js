@@ -30,7 +30,6 @@ function sendEmailNotification(message) {
     html: `${message}`,
   };
 
-  // Send the email
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       return console.log(error);
@@ -61,7 +60,6 @@ function getMachineData() {
             `Alert: Machine ${machine.name} with ID ${machine.ID} has a status of '${machine.status}'`
           );
 
-          // Replace this with your actual email sending logic
           sendEmailNotification(
             `Machine: <strong> ${machine.name} </strong> with an ID of: <strong> ${machine.ID} </strong> has a status of ' <strong> ${machine.status} </strong>'. <br><br> Go to <a href="https://console.oblivus.com/dashboard/oblivuscloud/myinstances/">Oblivus Dashboard</a> and reboot to stop your miner from getting rugged. `
           );
