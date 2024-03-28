@@ -11,11 +11,12 @@ const listVMsURL = `https://api.oblivus.com/cloud/virtualserver/list/?apiKey=${a
 const userDataURL = `https://api.oblivus.com/account/user/?apiKey=${apiKey}&apiToken=${apiToken}`;
 
 const exceptionList = ['vm16169ddd1d5b0'];
+const minWalletBalance = 750;
 
 function sendEmailNotification(message, messageSubject) {
   console.log(`Sending email notification: ${message}`);
 
-  let transporter = nodemailer.createTransport({
+  const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
       user: emailUser,
@@ -23,7 +24,7 @@ function sendEmailNotification(message, messageSubject) {
     },
   });
 
-  let mailOptions = {
+  const mailOptions = {
     from: '"Oblivus Update App" oblivusmachineupdates@gmail.com',
     to: 'oblivusmachineupdates@gmail.com, jasel.chauhan@gmail.com',
     subject: messageSubject,
@@ -74,9 +75,9 @@ function getUserData() {
     .get(userDataURL)
     .then((response) => {
       const userData = response.data.data;
-      console.log(userData.balance);
+      // console.log(userData.balance);
 
-      if (userData.balance < 750) {
+      if (userData.balance < minWalletBalance) {
         sendEmailNotification(
           `Wallet Balance is running low, currently at: <strong> $${userData.balance} </strong>. <br><br> Go to <a href="https://console.oblivus.com/dashboard/billing/addbalance//">Oblivus Top Up Balance</a> to topup balance and prevent machine downtime. `,
           `User Balance Running Low`
@@ -88,7 +89,7 @@ function getUserData() {
     });
 }
 
-setInterval(getUserData, 2 * 60 * 60 * 1000);
-// setInterval(getUserData, 10000);
+// setInterval(getUserData, 2 * 60 * 60 * 1000);
+setInterval(getUserData, 10000);
 setInterval(getMachineData, 5 * 60 * 1000);
 // setInterval(getMachineData, 10000);
